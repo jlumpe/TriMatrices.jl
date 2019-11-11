@@ -1,0 +1,4 @@
+name = "TriMatrix"
+uuid = "b3602c2d-56d5-44ed-b655-6a675d529c52"
+authors = ["Jared Lumpe <mjlumpe@gmail.com>"]
+version = "0.1.0"
