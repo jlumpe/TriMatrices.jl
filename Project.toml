@@ -2,3 +2,12 @@ name = "TriMatrices"
 uuid = "b3602c2d-56d5-44ed-b655-6a675d529c52"
 authors = ["Jared Lumpe <mjlumpe@gmail.com>"]
 version = "0.1.0"
+
+[deps]
+DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]

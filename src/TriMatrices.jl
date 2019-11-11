@@ -1,5 +1,10 @@
 module TriMatrices
 
-greet() = print("Hello World!")
+using DocStringExtensions
+
+
+include("math.jl")
+include("indexing.jl")
+
 
 end # module
