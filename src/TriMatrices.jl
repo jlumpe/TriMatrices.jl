@@ -1,4 +1,4 @@
-module TriMatrix
+module TriMatrices
 
 greet() = print("Hello World!")
 
