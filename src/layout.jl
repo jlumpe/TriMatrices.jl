@@ -12,12 +12,12 @@ _check_layout_param(D) = D isa Bool || throw(ArgumentError("Type parameter of Tr
 
 # Define a new TriLayout subtype
 macro trilayout(T::Symbol)
-    return esc(quote
-        struct $T{D} <: TriLayout{D}
-            $T{D}() where D = (_check_layout_param(D); new{D}())
-            $T() = $T{true}()
-        end
-    end)
+	return esc(quote
+	struct $T{D} <: TriLayout{D}
+		$T{D}() where D = (_check_layout_param(D); new{D}())
+		$T() = $T{true}()
+	end
+end)
 end
 
 """

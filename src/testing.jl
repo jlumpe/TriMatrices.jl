@@ -27,21 +27,21 @@ Values are as follows:
 Returns `(data, matrix)`.
 """
 function make_test_matrix(layout::TriLayout, n; diag=-1, datafunc=i -> 10i)
-    data = map(datafunc, 1:nelems(layout, n))
+	data = map(datafunc, 1:nelems(layout, n))
 
-    matrix = zeros(Int, n, n)
-    matrix[diagind(matrix)] .= diag
+	matrix = zeros(Int, n, n)
+	matrix[diagind(matrix)] .= diag
 
-    k = 0
-    for i in 1:n, j in 1:i
-        !hasdiag(layout) && i == j && continue
-        k += 1
-        layout isa TriUpper || (matrix[i, j] = data[k])
-        layout isa TriLower || (matrix[j, i] = data[k])
-    end
-    @assert k == length(data)
+	k = 0
+	for i in 1:n, j in 1:i
+		!hasdiag(layout) && i == j && continue
+		k += 1
+		layout isa TriUpper || (matrix[i, j] = data[k])
+		layout isa TriLower || (matrix[j, i] = data[k])
+	end
+	@assert k == length(data)
 
-    return data, matrix
+	return data, matrix
 end
 
 

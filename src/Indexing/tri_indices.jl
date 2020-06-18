@@ -8,7 +8,7 @@ Iterator over Cartesian indices of the stored region of a [`TriMatrix`](@ref), i
 the same order as the corresponding in its data array.
 """
 struct TriIndexIterator{L<:TriLayout}
-    n::Int
+	n::Int
 end
 
 Base.length(ti::TriIndexIterator{L}) where L = nelems(L, ti.n)
@@ -18,22 +18,22 @@ TriLayout(::TriIndexIterator{L}) where L = L()
 Base.iterate(e::TriIndexIterator) = iterate(e, (1, 1))
 
 function Base.iterate(e::TriIndexIterator{L}, state::Tuple{Int, Int}) where L
-    i, j = state
+	i, j = state
 
-    # Reached end of column
-    if j > i
-        i += 1
-        j = 1
-    end
+	# Reached end of column
+	if j > i
+		i += 1
+		j = 1
+	end
 
-    # Finished last row
-    i > (hasdiag(L) ? e.n : e.n - 1) && return nothing
+	# Finished last row
+	i > (hasdiag(L) ? e.n : e.n - 1) && return nothing
 
-    # Advance column
-    next = (i, j + 1)
+	# Advance column
+	next = (i, j + 1)
 
-    value = cartesian_from_tril(TriLayout(e), i, j)
-    return value, next
+	value = cartesian_from_tril(TriLayout(e), i, j)
+	return value, next
 end
 
 

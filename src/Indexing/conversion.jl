@@ -37,11 +37,11 @@ end
 @inline cartesian_to_tril(::TriUpper{true}, i, j) = (j, i)
 @inline cartesian_to_tril(::TriUpper{false}, i, j) = (j - 1, i)
 @inline function cartesian_to_tril(::TriSymmetric{D}, i, j) where D
-    if i >= j
-        return cartesian_to_tril(TriLower{D}(), i, j)
-    else
-        return cartesian_to_tril(TriUpper{D}(), i, j)
-    end
+	if i >= j
+		return cartesian_to_tril(TriLower{D}(), i, j)
+	else
+		return cartesian_to_tril(TriUpper{D}(), i, j)
+	end
 end
 
 # Inverse of cartesian_to_tril()
@@ -74,8 +74,8 @@ Convert a Cartesian row/column index to a linear index of the data array of a
 This function is the inverse of [`lin2car`](@ref).
 """
 function car2lin(layout::TriLayout, i, j)
-    check_tri_index(layout, i, j)
-    return car2lin_unchecked(layout, i, j)
+	check_tri_index(layout, i, j)
+	return car2lin_unchecked(layout, i, j)
 end
 
 
@@ -88,11 +88,11 @@ layout to the corresponding Cartesian index.
 This function is the inverse of [`car2lin`](@ref).
 """
 function lin2car(layout::TriLayout, i::Integer)
-    r, c = lin2car(i)
-    return cartesian_from_tril(layout, r, c)
+	r, c = lin2car(i)
+	return cartesian_from_tril(layout, r, c)
 end
 
 function lin2car(i::Integer)
-    n, i = triinv_rem(i - 1)
-    return (n + 1, i + 1)
+	n, i = triinv_rem(i - 1)
+	return (n + 1, i + 1)
 end
