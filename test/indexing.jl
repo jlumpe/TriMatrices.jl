@@ -1,10 +1,10 @@
-using TriMatrices: tri, triinv, triinv_rem
+using TriMatrices: trinum, triinv, triinv_rem
 using TriMatrices: mat2tri, tri2mat
 
 
 @testset "tri and triinv" begin
-    for n in 1:100
-        t = tri(n)
+    for n in 0:100
+        t = trinum(n)
 
         @test t == sum(1:n)
 

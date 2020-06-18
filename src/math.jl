@@ -14,13 +14,14 @@ $(TYPEDSIGNATURES)
 
 Get the nth triangular number.
 """
-@inline tri(n) = n * (n + 1) ÷ 2
+@inline trinum(n::Integer) = n * (n + 1) ÷ 2
 
 
 """
     triinv(t::Integer, strict=false)
 
 Get `n` such that `t` is the `n`th triangular number.
+If `strict=true` and `t` is not a triangular number, throw a `DomainError`.
 """
 triinv(t::Integer, strict::Bool=false) = triinv(t, Val(strict))
 
@@ -35,9 +36,9 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Get `n` and `r >= 0` such that `t == tri(n) + r`.
+Get `n` and `r >= 0` such that `t == trinum(n) + r`.
 """
 function triinv_rem(t::Integer)
-	n = triinv(t)
-	return n, t - tri(n)
+	n = triinv(t, Val{false}())
+	return n, t - trinum(n)
 end
