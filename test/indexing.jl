@@ -1,6 +1,5 @@
-using TriMatrices: trinum, triinv, triinv_rem
-using TriMatrices: car2lin, car2lin_unchecked, lin2car, check_tri_index
-using TriMatrices: tri_indices
+using TriMatrices
+using TriMatrices.Indexing
 using TriMatrices.Testing
 
 

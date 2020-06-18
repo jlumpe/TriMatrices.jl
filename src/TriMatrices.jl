@@ -5,9 +5,11 @@ using DocStringExtensions
 export TriUpper, TriLower, TriSymmetric
 
 
-include("math.jl")
 include("layout.jl")
-include("indexing.jl")
+
+include("Indexing/Indexing.jl")
+using .Indexing
+
 include("testing.jl")
 
 

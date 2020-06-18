@@ -1,5 +1,7 @@
 # Useful integer math stuff
 
+export trinum, triinv, triinv_rem
+
 
 """
 $(TYPEDSIGNATURES)
