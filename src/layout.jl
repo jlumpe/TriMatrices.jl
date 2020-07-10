@@ -39,16 +39,17 @@ zero.
 """
 $(TYPEDEF)
 
-Matrix is symmetric across the diagonal, one number is stored for each pair of
+Matrix is symmetric across the diagonal, one value is stored for each pair of
 non-diagonal entries.
 """
 @trilayout TriSymmetric
 
 
 """
+	$(FUNCTIONNAME)(::Type{<:TriLayout})
 	$(FUNCTIONNAME)(layout::TriLayout)
 
-Check if the given layout stores values along the diagonal.
+Check if the given layout/layout type stores values along the diagonal.
 """
 hasdiag(::Type{<:TriLayout{D}}) where D = D
 hasdiag(::TriLayout{D}) where D = D
