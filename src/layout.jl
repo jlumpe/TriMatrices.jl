@@ -12,12 +12,12 @@ _check_layout_param(D) = D isa Bool || throw(ArgumentError("Type parameter of Tr
 
 # Define a new TriLayout subtype
 macro trilayout(T::Symbol)
-	return esc(quote
-	struct $T{D} <: TriLayout{D}
-		$T{D}() where D = (_check_layout_param(D); new{D}())
-		$T() = $T{true}()
-	end
-end)
+	return quote
+		struct $T{D} <: TriLayout{D}
+			$T{D}() where D = (_check_layout_param(D); new{D}())
+			$T() = $T{true}()
+		end
+	end |> esc
 end
 
 """
@@ -46,7 +46,7 @@ non-diagonal entries.
 
 
 """
-    $(FUNCTIONNAME)(layout::TriLayout)
+	$(FUNCTIONNAME)(layout::TriLayout)
 
 Check if the given layout stores values along the diagonal.
 """
@@ -55,7 +55,7 @@ hasdiag(::TriLayout{D}) where D = D
 
 
 """
-    $(FUNCTIONNAME)(layout::TriLayout, n::Integer)
+	$(FUNCTIONNAME)(layout::TriLayout, n::Integer)
 
 Get the number of elements needed to store the data of an `n` by `n` matrix
 with the given layout.
