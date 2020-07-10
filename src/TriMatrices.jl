@@ -10,7 +10,7 @@ include("layout.jl")
 include("Indexing/Indexing.jl")
 using .Indexing
 
-include("testing.jl")
+include("Testing.jl")
 
 
 end # module
