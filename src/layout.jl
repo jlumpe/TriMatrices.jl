@@ -10,39 +10,37 @@ abstract type TriLayout{D} end
 # Check the type parameter of a TriLayout and throw an error if it isn't a Bool
 _check_layout_param(D) = D isa Bool || throw(ArgumentError("Type parameter of TriLayout must be a Bool"))
 
-# Define a new TriLayout subtype
-macro trilayout(T::Symbol)
-	return quote
-		struct $T{D} <: TriLayout{D}
-			$T{D}() where D = (_check_layout_param(D); new{D}())
-			$T() = $T{true}()
-		end
-	end |> esc
+
+for T in [:TriUpper, :TriLower, :TriSymmetric]
+	@eval struct $T{D} <: TriLayout{D}
+		$T{D}() where D = (_check_layout_param(D); new{D}())
+		$T() = $T{true}()
+	end
 end
 
-"""
+@doc """
 $(TYPEDEF)
 
 The upper triangle of the matrix is stored, values beneath the diagonal are
 zero.
 """
-@trilayout TriUpper
+TriUpper
 
-"""
+@doc """
 $(TYPEDEF)
 
 The lower triangle of the matrix is stored, values above the diagonal are
 zero.
 """
-@trilayout TriLower
+TriLower
 
-"""
+@doc """
 $(TYPEDEF)
 
 Matrix is symmetric across the diagonal, one value is stored for each pair of
 non-diagonal entries.
 """
-@trilayout TriSymmetric
+TriSymmetric
 
 
 """
