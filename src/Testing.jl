@@ -26,10 +26,10 @@ Values are as follows:
 
 Returns `(data, matrix)`.
 """
-function make_test_matrix(layout::TriLayout, n; diag=-1, datafunc=i -> 10i)
+function make_test_matrix(layout::TriLayout, n; diag=-1, datafunc=i -> 10i, T::Type=Int)
 	data = map(datafunc, 1:nelems(layout, n))
 
-	matrix = zeros(Int, n, n)
+	matrix = zeros(T, n, n)
 	matrix[diagind(matrix)] .= diag
 
 	k = 0
