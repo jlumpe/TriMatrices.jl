@@ -59,4 +59,5 @@ $(TYPEDSIGNATURES)
 Get the number of elements needed to store the data of a `TriMatrix`
 with the given layout.
 """
-nelems(layout, n::Integer) = trinum(hasdiag(layout) ? n : n - 1)
+nelems(::Type{L}, n::Integer) where {L<:TriLayout} = trinum(max(hasdiag(L) ? n : n - 1, 0))
+nelems(layout::TriLayout, n::Integer) = nelems(typeof(layout), n)
