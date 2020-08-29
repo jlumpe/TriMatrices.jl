@@ -1,5 +1,4 @@
-export check_tri_index, cartesian_to_tril, cartesian_from_tril
-export car2lin_unchecked, car2lin, lin2car
+export check_tri_index, car2lin_unchecked, car2lin, lin2car
 
 # Convert between 1D and 2D indexing for triangular arrays
 
