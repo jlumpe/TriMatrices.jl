@@ -9,9 +9,14 @@ the same order as the corresponding in its data array.
 """
 struct TriIndexIterator{L<:TriLayout}
 	n::Int
+
+	TriIndexIterator(::L, n::Int) where {L<:TriLayout} = new{L}(n)
 end
 
+Base.IteratorSize(::TriIndexIterator) = Base.HasLength()
 Base.length(ti::TriIndexIterator{L}) where L = nelems(L, ti.n)
+Base.IteratorEltype(::TriIndexIterator) = Base.HasEltype()
+Base.eltype(::Type{<:TriIndexIterator}) = Tuple{Int, Int}
 TriLayout(::TriIndexIterator{L}) where L = L()
 
 
@@ -32,7 +37,7 @@ function Base.iterate(e::TriIndexIterator{L}, state::Tuple{Int, Int}) where L
 	# Advance column
 	next = (i, j + 1)
 
-	value = cartesian_from_tril(TriLayout(e), i, j)
+	value = cartesian_from_tril(L(), i, j)
 	return value, next
 end
 
@@ -47,5 +52,4 @@ This should be equivalent to the following generator expression:
 
     (lin2car(layout, i) for i in 1:nelems(layout, n))
 """
-tri_indices(layout::TriLayout, n::Int) = TriIndexIterator{typeof(layout)}(n)
-tri_indices(n::Int) = tri_indices(TriLower{true}(), n)
+tri_indices(layout::TriLayout, n::Integer) = TriIndexIterator(layout, n)

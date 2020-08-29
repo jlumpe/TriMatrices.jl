@@ -76,6 +76,7 @@ end
 
 			ti = tri_indices(layout, n)
 			@test length(ti) == length(data)
+			!isempty(data) && @inferred first(ti)
 
 			i = 0
 			for (r, c) in tri_indices(layout, n)
