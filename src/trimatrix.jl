@@ -37,7 +37,7 @@ end
 function TriMatrix(layout::TriLayout, m::AbstractMatrix, T::Type=eltype(m);
                    diag=isempty(m) ? zero(T) : convert(T, m[1, 1]))
 	n = size(m, 1)
-	size(m, 2) == n || error("Matrix is not square")
+	size(m, 2) == n || throw(DimensionMismatch("Matrix is not square"))
 
 	tm = TriMatrix{T}(layout, undef, n, diag)
 	copyto!(tm, m)
