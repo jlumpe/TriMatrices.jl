@@ -1,7 +1,7 @@
 name = "TriMatrices"
 uuid = "b3602c2d-56d5-44ed-b655-6a675d529c52"
 authors = ["Jared Lumpe <mjlumpe@gmail.com>"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
