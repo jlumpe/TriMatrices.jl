@@ -19,14 +19,14 @@ function check_tri_index end
 @inline check_tri_index(::Type{Bool}, ::TriSymmetric{false}, i, j) = i != j
 
 """
-    check_tri_index(layout::TriLayout, i, j)
+    check_tri_index(layout::TriLayout, i::Integer, j::Integer)
 
 Check that a row/column index is within the stored region of a
 [`TriMatrix`](@ref) with the given `layout` or throw a `DomainError`. Assumes
 the index is otherwise valid for the corresponding matrix size.
 """
-function check_tri_index(layout::TriLayout, i, j)
-    check_tri_index(Bool, layout, i, j) || throw(DomainError("Invalid index for layout $(layout): ($i, $j)"))
+function check_tri_index(layout::TriLayout, i::Integer, j::Integer)
+    check_tri_index(Bool, layout, i, j) || throw(DomainError("Invalid index for TriLayout $(layout): ($i, $j)"))
 end
 
 # Convert cartesian index of given layout to cartesian index of TriLower{true}
@@ -59,8 +59,8 @@ end
 Like [`car2lin`](@ref), but somewhat faster because it does not check that the
 index is within the data region of the matrix.
 """
-@inline car2lin_unchecked(i, j) = trinum(i - 1) + j
-@inline car2lin_unchecked(layout::TriLayout, i, j) = car2lin_unchecked(cartesian_to_tril(layout, i, j)...)
+@inline car2lin_unchecked(::TriLower{true}, i::Integer, j::Integer) = trinum(i - 1) + j
+@inline car2lin_unchecked(layout::TriLayout, i::Integer, j::Integer) = car2lin_unchecked(TriLower(), cartesian_to_tril(layout, i, j)...)
 # @inline car2lin_unchecked(::TriLower{true}, i, j) = car2lin_unchecked(i, j)
 # @inline car2lin_unchecked(::TriLower{false}, i, j) = car2lin_unchecked(i - 1, j)
 # @inline car2lin_unchecked(::TriUpper{D}, i, j) where D = car2lin_unchecked(TriLower{D}, j, i)
@@ -80,7 +80,7 @@ given `layout` to a linear index of its data array.
 
 This function is the inverse of [`lin2car`](@ref).
 """
-function car2lin(layout::TriLayout, i, j)
+function car2lin(layout::TriLayout, i::Integer, j::Integer)
 	check_tri_index(layout, i, j)
 	return car2lin_unchecked(layout, i, j)
 end
