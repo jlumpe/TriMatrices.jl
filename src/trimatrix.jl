@@ -4,16 +4,15 @@ $(TYPEDEF)
 A triangular or symmetric matrix which stores data non-redundantly in a
 contiguous linear array.
 """
-struct TriMatrix{L<:TriLayout, T, A} <: AbstractMatrix{T}
+struct TriMatrix{T, L<:TriLayout, A} <: AbstractMatrix{T}
 	n::Int
 	data::A
 	diag::T
 
-	function TriMatrix{L}(n::Int, data::A, diag=zero(T)) where {L<:TriLayout, T, A<:AbstractVector{T}}
-		L isa DataType || throw(ArgumentError("Layout type parameter requires parameter"))
+	function TriMatrix(::L, n::Int, data::A, diag=zero(T)) where {L<:TriLayout, T, A<:AbstractVector{T}}
 		Base.require_one_based_indexing(data)
 		length(data) == nelems(L, n) || error("Matrix size does not match size of data array")
-		return new{L, T, A}(n, data, diag)
+		return new{T, L, A}(n, data, diag)
 	end
 end
 
@@ -22,29 +21,25 @@ end
 # Constructors
 ########################################
 
-# May give layout as first argument instead of type parameter to any constructor
-TriMatrix(::L, args...) where {L <: TriLayout} = TriMatrix{L}(args...)
-
 
 # Construct uninitialized
-function TriMatrix{L, T}(::UndefInitializer, n::Int, diag=zero(T)) where {L, T}
-	data = Array{T}(undef, nelems(L, n))
-	return TriMatrix{L}(n, data, diag)
+function TriMatrix{T}(layout::TriLayout, ::UndefInitializer, n::Int, diag=zero(T)) where T
+	data = Array{T}(undef, nelems(layout, n))
+	return TriMatrix(layout, n, data, convert(T, diag))
 end
 
-function TriMatrix{L}(::UndefInitializer, n::Int, diag=0.) where {L}
-	return TriMatrix{L, Float64}(undef, n, diag)
-end
-
+function TriMatrix(layout::TriLayout, ::UndefInitializer, n::Int, diag=0.)
+	return TriMatrix{Float64}(layout, undef, n, diag)
 end
 
 
 # Construct from existing matrix
-function TriMatrix{L}(m::AbstractMatrix, T::Type=eltype(m), diag=isempty(m) ? zero(T) : convert(T, m[1, 1])) where L
+function TriMatrix(layout::TriLayout, m::AbstractMatrix, T::Type=eltype(m);
+                   diag=isempty(m) ? zero(T) : convert(T, m[1, 1]))
 	n = size(m, 1)
 	size(m, 2) == n || error("Matrix is not square")
 
-	tm = TriMatrix{L, T}(undef, n, diag)
+	tm = TriMatrix{T}(layout, undef, n, diag)
 	copyto!(tm, m)
 
 	return tm
@@ -52,16 +47,16 @@ end
 
 
 # Construct filled
-function Base.fill(x, ::L, n::Int, diag=x) where {L <: TriLayout}
-	mat = TriMatrix{L, typeof(x)}(undef, n, diag)
+function Base.fill(x, layout::TriLayout, n::Int, diag=x)
+	mat = TriMatrix{typeof(x)}(layout, undef, n, diag)
 	fill!(mat.data, x)
 	return mat
 end
 
-Base.ones(T::Type, layout::L, n, diag=one(T)) where {L <: TriLayout} = fill(one(T), layout, n, diag)
-Base.ones(layout::L, n, diag=1.) where {L <: TriLayout} = ones(Float64, layout, n, diag)
-Base.zeros(T::Type, layout::L, n, diag=zero(T)) where {L <: TriLayout} = fill(zero(T), layout, n, diag)
-Base.zeros(layout::L, n, diag=0.) where {L <: TriLayout} = zeros(Float64, layout, n, diag)
+Base.ones(T::Type, layout::TriLayout, n, diag=one(T)) = fill(one(T), layout, n, diag)
+Base.ones(layout::TriLayout, n, diag=1.) = ones(Float64, layout, n, diag)
+Base.zeros(T::Type, layout::TriLayout, n, diag=zero(T)) = fill(zero(T), layout, n, diag)
+Base.zeros(layout::TriLayout, n, diag=0.) = zeros(Float64, layout, n, diag)
 
 
 # Construct similar
@@ -73,7 +68,7 @@ Base.similar(m::TriMatrix, dims::Tuple) = similar(m.data, dims)
 # General methods
 ########################################
 
-TriLayout(::Type{M}) where {L, M<:TriMatrix{L}} = L()
+TriLayout(::Type{<:TriMatrix{T, L}}) where {T, L} = L()
 TriLayout(m::TriMatrix) = TriLayout(typeof(m))
 TriMatrices.Indexing.tri_indices(m::TriMatrix) = tri_indices(TriLayout(m), m.n)
 
@@ -83,9 +78,9 @@ Base.IndexStyle(::Type{<:TriMatrix}) = IndexCartesian()
 Base.parent(m::TriMatrix) = m.data
 
 
-@Base.propagate_inbounds function Base.getindex(mat::TriMatrix{L,T},
+@Base.propagate_inbounds function Base.getindex(mat::TriMatrix{T,L},
                                                 r::Integer, c::Integer,
-                                                ) where {L, T}
+                                                ) where {T, L}
 
 	@boundscheck checkbounds(mat, r, c)
 
@@ -93,14 +88,14 @@ Base.parent(m::TriMatrix) = m.data
 	L <: TriLower && r < c && return zero(T)  # Lower triangular above the diagonal
 	L <: TriUpper && r > c && return zero(T)  # Upper triangular below the diagonal
 
-	i = car2lin_unchecked(L(), r, c)
+	i = car2lin_unchecked(TriLayout(mat), r, c)
 	return mat.data[i]
 end
 
 
-@Base.propagate_inbounds function Base.setindex!(mat::TriMatrix{L,T},
+@Base.propagate_inbounds function Base.setindex!(mat::TriMatrix{T,L},
                                                  v, r::Integer, c::Integer,
-                                                 ) where {L, T}
+                                                 ) where {T, L}
 
 	@boundscheck checkbounds(mat, r, c)
 
@@ -116,13 +111,13 @@ end
 		return zero(T)
 	end
 
-	i = car2lin_unchecked(L(), r, c)
+	i = car2lin_unchecked(TriLayout(mat), r, c)
 	return mat.data[i] = v
 end
 
 
 # Copy data from general matrix into TriMatrix
-function Base.copyto!(dest::TriMatrix{L}, src::AbstractMatrix) where {L}
+function Base.copyto!(dest::TriMatrix, src::AbstractMatrix)
 	n = dest.n
 	size(src) == (n, n) || error("Matrix sizes do not match")
 
@@ -139,10 +134,10 @@ end
 ########################################
 
 # Renders entries on zero side of diagonal as dots, like triangular types in LinearAlgebra
-function Base.replace_in_print_matrix(::TriMatrix{<:TriLower}, i::Integer, j::Integer, s::AbstractString)
+function Base.replace_in_print_matrix(::TriMatrix{T, <:TriLower}, i::Integer, j::Integer, s::AbstractString) where T
 	i >= j ? s : Base.replace_with_centered_mark(s)
 end
-function Base.replace_in_print_matrix(::TriMatrix{<:TriUpper}, i::Integer, j::Integer, s::AbstractString)
+function Base.replace_in_print_matrix(::TriMatrix{T, <:TriUpper}, i::Integer, j::Integer, s::AbstractString) where T
 	i <= j ? s : Base.replace_with_centered_mark(s)
 end
 
