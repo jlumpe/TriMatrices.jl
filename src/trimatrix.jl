@@ -1,8 +1,8 @@
 """
 $(TYPEDEF)
 
-A triangular or symmetric matrix which stores data non-redundantly in contiguous
-memory.
+A triangular or symmetric matrix which stores data non-redundantly in a
+contiguous linear array.
 """
 struct TriMatrix{L<:TriLayout, T, A} <: AbstractMatrix{T}
 	n::Int

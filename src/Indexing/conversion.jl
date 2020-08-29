@@ -7,7 +7,8 @@ export car2lin_unchecked, car2lin, lin2car
     check_tri_index(Bool, layout::TriLayout, i, j)::Bool
 
 Check whether a row/column index is within the stored region of a
-[`TriMatrix`](@ref) with the given layout.
+[`TriMatrix`](@ref) with the given layout. Assumes the index is otherwise valid
+for the corresponding matrix size.
 """
 function check_tri_index end
 
@@ -22,7 +23,7 @@ function check_tri_index end
     check_tri_index(layout::TriLayout, i, j)
 
 Check that a row/column index is within the stored region of a
-[`TriMatrix`](@ref) with the given layout or throw a `DomainError`. This assumes
+[`TriMatrix`](@ref) with the given `layout` or throw a `DomainError`. Assumes
 the index is otherwise valid for the corresponding matrix size.
 """
 function check_tri_index(layout::TriLayout, i, j)
@@ -52,6 +53,13 @@ end
 @inline cartesian_from_tril(::TriSymmetric{D}, i, j) where D = cartesian_from_tril(TriLower{D}(), i, j)
 
 
+"""
+	$(FUNCTIONNAME)(layout::TriLayout, i::Integer, j::Integer)
+	$(FUNCTIONNAME)(layout::TriLayout, idx::CartesianIndex{2})
+
+Like [`car2lin`](@ref), but somewhat faster because it does not check that the
+index is within the data region of the matrix.
+"""
 @inline car2lin_unchecked(i, j) = trinum(i - 1) + j
 @inline car2lin_unchecked(layout::TriLayout, i, j) = car2lin_unchecked(cartesian_to_tril(layout, i, j)...)
 # @inline car2lin_unchecked(::TriLower{true}, i, j) = car2lin_unchecked(i, j)
@@ -68,8 +76,8 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Convert a Cartesian row/column index to a linear index of the data array of a
-[`TriMatrix`](@ref) with the given layout.
+Convert Cartesian row/column indices `(i, j)` of a [`TriMatrix`](@ref) with the
+given `layout` to a linear index of its data array.
 
 This function is the inverse of [`lin2car`](@ref).
 """
@@ -82,8 +90,8 @@ end
 """
     $(FUNCTIONNAME)(layout::TriLayout, i)
 
-Convert a linear index of the data array of a [`TriMatrix`](@ref) with the given
-layout to the corresponding Cartesian index.
+Convert linear index `i` of the data array of a [`TriMatrix`](@ref) with the given
+`layout` to the corresponding Cartesian index.
 
 This function is the inverse of [`car2lin`](@ref).
 """

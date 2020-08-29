@@ -40,12 +40,12 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Iterate over linear and 2d indices of the lower triangle of an `n` by `n` matrix
-in tandem.
+Iterate over the cartesian indices of a [`TriMatrix`](@ref) corresponding to
+each index of its data array, in order.
 
-This should be equivalent to the generator expression:
+This should be equivalent to the following generator expression:
 
-    (lin2car(layout, i) for i in 1:nelems(n))
+    (lin2car(layout, i) for i in 1:nelems(layout, n))
 """
 tri_indices(layout::TriLayout, n::Int) = TriIndexIterator{typeof(layout)}(n)
 tri_indices(n::Int) = tri_indices(TriLower{true}(), n)

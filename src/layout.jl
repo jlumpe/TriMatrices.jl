@@ -1,7 +1,7 @@
 """
 $(TYPEDEF)
 
-Abstract type which indicates how a square matrix's values are layed out in
+Abstract type which indicates how a [`TriMatrix`](@ref)'s values are layed out in
 memory. Type parameter is a `Bool` indicating whether the matrix diagonal is
 stored.
 """
@@ -54,9 +54,9 @@ hasdiag(::TriLayout{D}) where D = D
 
 
 """
-	$(FUNCTIONNAME)(layout::TriLayout, n::Integer)
+$(TYPEDSIGNATURES)
 
-Get the number of elements needed to store the data of an `n` by `n` matrix
+Get the number of elements needed to store the data of a `TriMatrix`
 with the given layout.
 """
 nelems(layout, n::Integer) = trinum(hasdiag(layout) ? n : n - 1)
