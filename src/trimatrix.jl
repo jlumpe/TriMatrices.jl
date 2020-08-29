@@ -36,9 +36,6 @@ function TriMatrix{L}(::UndefInitializer, n::Int, diag=0.) where {L}
 	return TriMatrix{L, Float64}(undef, n, diag)
 end
 
-function Base.similar(mat::TriMatrix{L}, element_type::Type=eltype(mat); n::Int=mat.n, diag=mat.diag) where L
-	data = similar(mat.data, element_type, nelems(L, n))
-	return TriMatrix{L}(n, data, convert(element_type, diag))
 end
 
 
@@ -65,6 +62,11 @@ Base.ones(T::Type, layout::L, n, diag=one(T)) where {L <: TriLayout} = fill(one(
 Base.ones(layout::L, n, diag=1.) where {L <: TriLayout} = ones(Float64, layout, n, diag)
 Base.zeros(T::Type, layout::L, n, diag=zero(T)) where {L <: TriLayout} = fill(zero(T), layout, n, diag)
 Base.zeros(layout::L, n, diag=0.) where {L <: TriLayout} = zeros(Float64, layout, n, diag)
+
+
+# Construct similar
+Base.similar(m::TriMatrix, new_eltype::Type, dims::Tuple) = similar(m.data, new_eltype, dims)
+Base.similar(m::TriMatrix, dims::Tuple) = similar(m.data, dims)
 
 
 ########################################

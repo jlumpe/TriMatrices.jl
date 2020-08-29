@@ -27,34 +27,6 @@ const T_VALS = [Float64, Int]
 end
 
 
-@testset "similar" begin
-	for L in LAYOUT_TYPES_P
-		for n in N_VALS
-			for T in T_VALS
-				m = TriMatrix{L, T}(undef, n, 1)
-				m2 = similar(m)
-				@test typeof(m2) == typeof(m)
-				@test size(m2) == (n, n)
-				@test m2.diag == m.diag
-
-				# Change type
-				T2 = Float32
-				m3 = similar(m, T2)
-				@test typeof(m3) == TriMatrix{L, T2, Vector{T2}}
-				@test size(m3) == (n, n)
-				@test m3.diag == m.diag
-
-				# Change diag
-				m4 = similar(m, diag=2)
-				@test typeof(m4) == typeof(m)
-				@test size(m4) == (n, n)
-				@test m4.diag == 2
-			end
-		end
-	end
-end
-
-
 @testset "Construct from AbstractMatrix" begin
 	for L in LAYOUT_TYPES_P
 		for n in N_VALS
