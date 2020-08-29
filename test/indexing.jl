@@ -4,21 +4,22 @@ using TriMatrices.Testing
 
 
 @testset "tri and triinv" begin
-	for n in 0:100
+	for n in [0:100; 2 .^ 10:10:30]
 		t = trinum(n)
 
 		@test t == sum(1:n)
 
 		@test triinv(t) == n
-		@test triinv(t, true) == n
+		@test triinv(t) == n
+		@test triinv_strict(t) == n
 	end
 
-	for t in 0:100
+	for t in [0:100; 2 .^ 10:10:30]
 		n, r = triinv_rem(t)
-		@test n >= 0 && r >= 0
+		@test n >= 0 && (0 <= r <= n)
 		@test trinum(n) + r == t
 		@test triinv(t) == n
-		r == 0 || @test_throws DomainError triinv(t, true)
+		r == 0 || @test_throws DomainError triinv_strict(t)
 	end
 end
 
