@@ -32,21 +32,28 @@ end
 
 			# By cartesian index
 			for r in 1:n, c in 1:n
+				idx = CartesianIndex(r, c)
 				v = tmat[r, c]
 
-				if v > 0  # Element is stored in data array
-					@test check_tri_index(Bool, layout, r, c)
+				if check_tri_index(Bool, layout, r, c)  # In data region
+					@test check_tri_index(Bool, layout, idx)
 					check_tri_index(layout, r, c)
+					check_tri_index(layout, idx)
 
 					i = car2lin(layout, r, c)
+					@test car2lin(layout, idx) == i
 					@test car2lin_unchecked(layout, r, c) == i
+					@test car2lin_unchecked(layout, idx) == i
 
 					@test tmat[r, c] == data[i]
 
 				else  # Not stored
 					@test !check_tri_index(Bool, layout, r, c)
+					@test !check_tri_index(Bool, layout, idx)
 					@test_throws DomainError check_tri_index(layout, r, c)
+					@test_throws DomainError check_tri_index(layout, idx)
 					@test_throws DomainError car2lin(layout, r, c)
+					@test_throws DomainError car2lin(layout, idx)
 				end
 			end
 

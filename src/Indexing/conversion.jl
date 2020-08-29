@@ -17,9 +17,11 @@ function check_tri_index end
 @inline check_tri_index(::Type{Bool}, ::TriUpper{false}, i, j) = i < j
 @inline check_tri_index(::Type{Bool}, ::TriSymmetric{true}, i, j) = true
 @inline check_tri_index(::Type{Bool}, ::TriSymmetric{false}, i, j) = i != j
+check_tri_index(::Type{Bool}, layout::TriLayout, idx::CartesianIndex{2}) = check_tri_index(Bool, layout, idx[1], idx[2])
 
 """
     check_tri_index(layout::TriLayout, i::Integer, j::Integer)
+    check_tri_index(layout::TriLayout, idx::CartesianIndex{2})
 
 Check that a row/column index is within the stored region of a
 [`TriMatrix`](@ref) with the given `layout` or throw a `DomainError`. Assumes
@@ -28,6 +30,8 @@ the index is otherwise valid for the corresponding matrix size.
 function check_tri_index(layout::TriLayout, i::Integer, j::Integer)
     check_tri_index(Bool, layout, i, j) || throw(DomainError("Invalid index for TriLayout $(layout): ($i, $j)"))
 end
+
+check_tri_index(layout::TriLayout, idx::CartesianIndex{2}) = check_tri_index(layout, idx[1], idx[2])
 
 # Convert cartesian index of given layout to cartesian index of TriLower{true}
 # which has the same index in the data array.
@@ -71,6 +75,7 @@ index is within the data region of the matrix.
 #         return car2lin_unchecked(TriUpper{D}(), j, i)
 #     end
 # end
+@inline car2lin_unchecked(layout::TriLayout, idx::CartesianIndex{2}) = car2lin_unchecked(layout, idx[1], idx[2])
 
 """
 $(TYPEDSIGNATURES)
@@ -84,6 +89,8 @@ function car2lin(layout::TriLayout, i::Integer, j::Integer)
 	check_tri_index(layout, i, j)
 	return car2lin_unchecked(layout, i, j)
 end
+
+car2lin(layout::TriLayout, idx::CartesianIndex{2}) = car2lin(layout, idx[1], idx[2])
 
 
 """
