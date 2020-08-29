@@ -88,9 +88,21 @@ Base.parent(m::TriMatrix) = m.data
 	L <: TriLower && r < c && return zero(T)  # Lower triangular above the diagonal
 	L <: TriUpper && r > c && return zero(T)  # Upper triangular below the diagonal
 
-	i = car2lin_unchecked(TriLayout(mat), r, c)
-	return mat.data[i]
+	return getindex_tri_unsafe(mat, r, c)
 end
+
+
+"""
+$(TYPEDSIGNATURES)
+
+Get the value within the stored data region of a TriMatrix. Should be faster
+that
+"""
+function getindex_tri_unsafe(mat::TriMatrix, r::Integer, c::Integer)
+	i = car2lin_unchecked(TriLayout(mat), r, c)
+	return @inbounds mat.data[i]
+end
+getindex_tri_unsafe(mat::TriMatrix, idx::CartesianIndex{2}) = getindex_tri_unsafe(mat, idx[1], idx[2])
 
 
 @Base.propagate_inbounds function Base.setindex!(mat::TriMatrix{T,L},
@@ -111,9 +123,14 @@ end
 		return zero(T)
 	end
 
-	i = car2lin_unchecked(TriLayout(mat), r, c)
-	return mat.data[i] = v
+	return setindex!_tri_unsafe(mat, v, r, c)
 end
+
+function setindex_tri_unsafe!(mat::TriMatrix, v, r::Integer, c::Integer)
+	i = car2lin_unchecked(TriLayout(mat), r, c)
+	return @inbounds mat.data[i] = v
+end
+setindex_tri_unsafe!(mat::TriMatrix, v, idx::CartesianIndex{2}) = setindex_tri_unsafe!(mat, v, idx[1], idx[2])
 
 
 # Copy data from general matrix into TriMatrix
@@ -122,7 +139,7 @@ function Base.copyto!(dest::TriMatrix, src::AbstractMatrix)
 	size(src) == (n, n) || error("Matrix sizes do not match")
 
 	for (i, (r, c)) in enumerate(tri_indices(dest))
-		dest.data[i] = src[r, c]
+		@inbounds dest.data[i] = src[r, c]
 	end
 
 	return dest
