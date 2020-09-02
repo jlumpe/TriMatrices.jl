@@ -5,9 +5,9 @@ export check_tri_index, car2lin_unchecked, car2lin, lin2car
 """
     check_tri_index(Bool, layout::TriLayout, i, j)::Bool
 
-Check whether a row/column index is within the stored region of a
-[`TriMatrix`](@ref) with the given layout. Assumes the index is otherwise valid
-for the corresponding matrix size.
+Check whether a row/column index is within the stored region of a `TriMatrix`
+with the given layout. Assumes the index is otherwise valid for the
+corresponding matrix size.
 """
 function check_tri_index end
 
@@ -23,9 +23,9 @@ check_tri_index(::Type{Bool}, layout::TriLayout, idx::CartesianIndex{2}) = check
     check_tri_index(layout::TriLayout, i::Integer, j::Integer)
     check_tri_index(layout::TriLayout, idx::CartesianIndex{2})
 
-Check that a row/column index is within the stored region of a
-[`TriMatrix`](@ref) with the given `layout` or throw a `DomainError`. Assumes
-the index is otherwise valid for the corresponding matrix size.
+Check that a row/column index is within the stored data region of a `TriMatrix`
+with the given `layout` or throw a `DomainError`. Assumes the index is otherwise
+valid for the corresponding matrix size.
 """
 function check_tri_index(layout::TriLayout, i::Integer, j::Integer)
     check_tri_index(Bool, layout, i, j) || throw(DomainError("Invalid index for TriLayout $(layout): ($i, $j)"))
@@ -78,10 +78,11 @@ index is within the data region of the matrix.
 @inline car2lin_unchecked(layout::TriLayout, idx::CartesianIndex{2}) = car2lin_unchecked(layout, idx[1], idx[2])
 
 """
-$(TYPEDSIGNATURES)
+	$(FUNCTIONNAME)(layout::TriLayout, i::Integer, j::Integer)
+	$(FUNCTIONNAME)(layout::TriLayout, idx::CartesianIndex{2})
 
-Convert Cartesian row/column indices `(i, j)` of a [`TriMatrix`](@ref) with the
-given `layout` to a linear index of its data array.
+Convert Cartesian row/column indices of a `TriMatrix` with the given layout to
+a linear index of its data array.
 
 This function is the inverse of [`lin2car`](@ref).
 """
@@ -94,10 +95,10 @@ car2lin(layout::TriLayout, idx::CartesianIndex{2}) = car2lin(layout, idx[1], idx
 
 
 """
-    $(FUNCTIONNAME)(layout::TriLayout, i)
+    $(FUNCTIONNAME)(layout::TriLayout, i::Integer)
 
-Convert linear index `i` of the data array of a [`TriMatrix`](@ref) with the given
-`layout` to the corresponding Cartesian index.
+Convert linear index of the data array of a `TriMatrix` with the given layout to
+the corresponding Cartesian index.
 
 This function is the inverse of [`car2lin`](@ref).
 """

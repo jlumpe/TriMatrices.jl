@@ -28,7 +28,7 @@ $(TYPEDSIGNATURES)
 Get the largest `n` such that `t >= trinum(n)`.
 
 # See also
-[`triinv_stric`](@ref), [`trinum`](@ref)
+[`triinv_strict`](@ref), [`trinum`](@ref)
 """
 @inline triinv(t::Integer) = _triinv(t, Val{false}())
 
@@ -37,7 +37,7 @@ Get the largest `n` such that `t >= trinum(n)`.
 $(TYPEDSIGNATURES)
 
 Get `n` such that `t` is the `n`th triangular number.
-If ``t` is not a triangular number, throw a `DomainError`.
+If `t` is not a triangular number, throw a `DomainError`.
 
 # See also
 [`triinv`](@ref), [`trinum`](@ref)

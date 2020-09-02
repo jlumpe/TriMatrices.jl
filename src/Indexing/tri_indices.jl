@@ -2,10 +2,9 @@ export tri_indices
 
 
 """
-$(TYPEDEF)
-
-Iterator over Cartesian indices of the stored region of a [`TriMatrix`](@ref), in
-the same order as the corresponding in its data array.
+Iterator over Cartesian indices of the stored region of a `TriMatrix` in an
+order corresponding to the elements of its data array. Created with the
+[`tri_indices`](@ref) function.
 """
 struct TriIndexIterator{L<:TriLayout}
 	n::Int
@@ -45,8 +44,8 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Iterate over the cartesian indices of a [`TriMatrix`](@ref) corresponding to
-each index of its data array, in order.
+Iterate over the cartesian indices of a `TriMatrix` corresponding to the linear
+indices of its data array, in order.
 
 This should be equivalent to the following generator expression:
 
