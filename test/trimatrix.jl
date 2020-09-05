@@ -1,5 +1,5 @@
 using TriMatrices
-using TriMatrices: hasdiag
+using TriMatrices: hasdiag, TriLayout, getindex_tri_unsafe, setindex_tri_unsafe!
 using TriMatrices.Testing
 
 const N_VALS = [0, 1, 2, 5, 25]
@@ -9,19 +9,21 @@ const T_VALS = [Float64, Int]
 
 @testset "Construct uninitialized" begin
 	for L in LAYOUT_TYPES_P
+		layout = L()
+
 		for n in N_VALS
 			for T in T_VALS
-				m = TriMatrix{T}(L(), undef, n)
+				m = TriMatrix{T}(layout, undef, n)
 				@test typeof(m) === TriMatrix{T, L, Vector{T}}
 				@test size(m) == (n, n)
 				@test m.diag === zero(T)
 
-				m = TriMatrix{T}(L(), undef, n, 1)
+				m = TriMatrix{T}(layout, undef, n, 1)
 				@test m.diag === one(T)
 			end
 
 			# Type defaults to Float64
-			@test typeof(TriMatrix(L(), undef, n)) == TriMatrix{Float64, L, Vector{Float64}}
+			@test typeof(TriMatrix(layout, undef, n)) == TriMatrix{Float64, L, Vector{Float64}}
 		end
 	end
 end
@@ -29,55 +31,143 @@ end
 
 @testset "Construct from AbstractMatrix" begin
 	for L in LAYOUT_TYPES_P
+		layout = L()
+
 		for n in N_VALS
 			for T in T_VALS
-				data, m = make_test_matrix(L(), n, T=T)
+				data, m = make_test_matrix(layout, n, T=T)
 
-				m2 = TriMatrix(L(), m)
+				m2 = TriMatrix(layout, m)
 				@test m2 isa TriMatrix{T, L}
 				@test m2 == m
 
 				T2 = Float32
-				m3 = TriMatrix(L(), m, T2)
+				m3 = TriMatrix(layout, m, T2)
 				@test m3 isa TriMatrix{T2, L}
 				@test m3 == m
 			end
 		end
+
+		@test_throws DimensionMismatch TriMatrix(layout, zeros(3, 4))
 	end
 end
 
 
 @testset "Construct filled" begin
 	for L in LAYOUT_TYPES_P
+		layout = L()
+
 		for n in N_VALS
 			for T in T_VALS
-				m = zeros(T, L(), n)
-				@test m isa TriMatrix{T, L} && size(m) == (n, n)
-				@test all(m.data .== 0)
+				cases = [
+					(zeros(T, layout, n), zero(T)),
+					(ones(T, layout, n), one(T)),
+					(fill(T(3), layout, n), T(3)),
+				]
 
-				m = ones(T, L(), n)
-				@test m isa TriMatrix{T, L} && size(m) == (n, n)
-				@test all(m.data .== 1)
-
-				m = fill(T(3), L(), n)
-				@test m isa TriMatrix{T, L} && size(m) == (n, n)
-				@test all(m.data .== 3)
+				for (m, v) in cases
+					@test m isa TriMatrix{T, L}
+					@test size(m) == (n, n)
+					@test all(x -> x === v, m.data)
+				end
 			end
 		end
 
-		@test zeros(L(), 10) isa TriMatrix{Float64, L}
-		@test ones(L(), 10) isa TriMatrix{Float64, L}
+		@test zeros(layout, 10) isa TriMatrix{Float64, L}
+		@test ones(layout, 10) isa TriMatrix{Float64, L}
 	end
 end
 
 
 @testset "Basic properties" begin
-	# TODO
+	for L in LAYOUT_TYPES_P
+		layout = L()
+
+		for n in N_VALS
+			for T in T_VALS
+				m = TriMatrix{T}(layout, undef, n)
+
+				@test size(m) == (n, n)
+				@test eltype(m) == T
+				@test Base.IndexStyle(m) == Base.IndexCartesian()
+				@test Base.parent(m) === m.data
+
+				@test TriLayout(m) == layout
+			end
+		end
+	end
 end
 
 
-@testset "getindex and setindex!" begin
-	# TODO
+@testset "getindex" begin
+	for L in LAYOUT_TYPES_P
+		layout = L()
+
+		for n in N_VALS
+			n == 0 && continue
+			for T in T_VALS
+				am, tm = make_test_matrix_pair(layout, n, T=T)
+
+				for i in 1:n, j in 1:n
+					@test tm[i, j] === am[i, j]
+					@inferred tm[i, j]
+
+					idx = CartesianIndex(i, j)
+					@test tm[idx] === am[i, j]
+					@inferred tm[idx]
+
+					if check_tri_index(Bool, layout, i, j)
+						@test getindex_tri_unsafe(tm, i, j) === am[i, j]
+						@test getindex_tri_unsafe(tm, idx) === am[i, j]
+					end
+				end
+			end
+		end
+	end
+end
+
+
+@testset "setindex!" begin
+	for L in LAYOUT_TYPES_P
+		layout = L()
+
+		for n in N_VALS
+			n == 0 && continue
+			for T in T_VALS
+				m = ones(layout, n, -1)
+
+				v = T(2)
+
+				for i in 1:n, j in 1:n
+					idx = CartesianIndex(i, j)
+
+					if check_tri_index(Bool, layout, i, j)
+						v += 1
+						@test (m[i, j] = v) === v
+						@test m[i, j] == v
+
+						v += 1
+						@test (m[idx] = v) === v
+						@test m[i, j] == v
+
+						v += 1
+						@test setindex_tri_unsafe!(m, v, i, j) === v
+						@test m[i, j] == v
+
+						v += 1
+						@test setindex_tri_unsafe!(m, v, idx) === v
+						@test m[i, j] == v
+
+					else
+						# Setting to current value is OK
+						@test (m[i, j] = m[i, j]) === m[i, j]
+						# Changing is not
+						@test_throws ErrorException m[i, j] += 1
+					end
+				end
+			end
+		end
+	end
 end
 
 
