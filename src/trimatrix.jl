@@ -78,59 +78,76 @@ Base.IndexStyle(::Type{<:TriMatrix}) = IndexCartesian()
 Base.parent(m::TriMatrix) = m.data
 
 
+########################################
+# Indexing
+########################################
+
+"""
+$(TYPEDSIGNATURES)
+
+Get the value of an element within the stored data region of a
+[`TriMatrix`](@ref). Should be faster than `Base.getindex` (even with
+`@inbounds` applied) but results are undefined if `check_tri_index(mat, i, j)`
+does not pass.
+"""
+function getindex_tri_unsafe(mat::TriMatrix, i::Integer, j::Integer)
+	ii = car2lin_unchecked(TriLayout(mat), i, j)
+	return @inbounds mat.data[ii]
+end
+getindex_tri_unsafe(mat::TriMatrix, idx::CartesianIndex{2}) = getindex_tri_unsafe(mat, idx[1], idx[2])
+
 @Base.propagate_inbounds function Base.getindex(mat::TriMatrix{T,L},
-                                                r::Integer, c::Integer,
+                                                i::Integer, j::Integer,
                                                 ) where {T, L}
 
-	@boundscheck checkbounds(mat, r, c)
+	@boundscheck checkbounds(mat, i, j)
 
-	!hasdiag(L) && r == c && return mat.diag  # Diagonal fill value
-	L <: TriLower && r < c && return zero(T)  # Lower triangular above the diagonal
-	L <: TriUpper && r > c && return zero(T)  # Upper triangular below the diagonal
+	!hasdiag(L) && i == j && return mat.diag  # Diagonal fill value
+	L <: TriLower && i < j && return zero(T)  # Lower triangular above the diagonal
+	L <: TriUpper && i > j && return zero(T)  # Upper triangular below the diagonal
 
-	return getindex_tri_unsafe(mat, r, c)
+	return getindex_tri_unsafe(mat, i, j)
 end
 
 
 """
 $(TYPEDSIGNATURES)
 
-Get the value within the stored data region of a TriMatrix. Should be faster
-that
+Set the value of an element within the stored data region of a
+[`TriMatrix`](@ref). Should be faster than `Base.setindex!` (even with
+`@inbounds` applied) but results are undefined if `check_tri_index(mat, i, j)`
+does not pass.
 """
-function getindex_tri_unsafe(mat::TriMatrix, r::Integer, c::Integer)
-	i = car2lin_unchecked(TriLayout(mat), r, c)
-	return @inbounds mat.data[i]
+function setindex_tri_unsafe!(mat::TriMatrix, v, i::Integer, j::Integer)
+	ii = car2lin_unchecked(TriLayout(mat), i, j)
+	return @inbounds mat.data[ii] = v
 end
-getindex_tri_unsafe(mat::TriMatrix, idx::CartesianIndex{2}) = getindex_tri_unsafe(mat, idx[1], idx[2])
+setindex_tri_unsafe!(mat::TriMatrix, v, idx::CartesianIndex{2}) = setindex_tri_unsafe!(mat, v, idx[1], idx[2])
 
+@Base.propagate_inbounds function Base.setindex!(mat::TriMatrix{T,L}, v,
+                                                 i::Integer, j::Integer,
+                                                ) where {T, L}
 
-@Base.propagate_inbounds function Base.setindex!(mat::TriMatrix{T,L},
-                                                 v, r::Integer, c::Integer,
-                                                 ) where {T, L}
+	@boundscheck checkbounds(mat, i, j)
 
-	@boundscheck checkbounds(mat, r, c)
+	if !hasdiag(L) && i == j
+		v != mat.diag && error("Cannot change value on diagonal for TriMatrix with layout $L")
+		return mat.diag
+	end
 
-	!hasdiag(L) && r == c && v != mat.diag && error("Cannot change value on diagonal for TriMatrix with layout $L")
-
-	if L <: TriLower && r < c
+	if L <: TriLower && i < j
 		v != 0 && error("Cannot assign non-zero value to index above diagonal for TriMatrix with layout TriLower")
 		return zero(T)
 	end
 
-	if L <: TriUpper && c < r
+	if L <: TriUpper && i > j
 		v != 0 && error("Cannot assign non-zero value to index below diagonal for TriMatrix with layout TriUpper")
 		return zero(T)
 	end
 
-	return setindex!_tri_unsafe(mat, v, r, c)
+	return setindex_tri_unsafe!(mat, v, i, j)
 end
 
-function setindex_tri_unsafe!(mat::TriMatrix, v, r::Integer, c::Integer)
-	i = car2lin_unchecked(TriLayout(mat), r, c)
-	return @inbounds mat.data[i] = v
-end
-setindex_tri_unsafe!(mat::TriMatrix, v, idx::CartesianIndex{2}) = setindex_tri_unsafe!(mat, v, idx[1], idx[2])
 
 
 # Copy data from general matrix into TriMatrix
