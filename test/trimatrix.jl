@@ -18,7 +18,7 @@ const T_VALS = [Float64, Int]
 				@test size(m) == (n, n)
 				@test m.diag === zero(T)
 
-				m = TriMatrix{T}(layout, undef, n, 1)
+				m = TriMatrix{T}(layout, undef, n, diag=1)
 				@test m.diag === one(T)
 			end
 
@@ -134,7 +134,7 @@ end
 		for n in N_VALS
 			n == 0 && continue
 			for T in T_VALS
-				m = ones(layout, n, -1)
+				m = ones(layout, n, diag=-1)
 
 				v = T(2)
 

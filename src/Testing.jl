@@ -58,7 +58,7 @@ Returns a `(::Matrix, ::TriMatrix)` tuple.
 """
 function make_test_matrix_pair(layout::TriLayout, n::Int; diag=-1, kw...)
 	data, arraymat = make_test_matrix(layout, n; diag=diag, kw...)
-	trimat = TriMatrix(layout, n, data, diag)
+	trimat = TriMatrix(layout, n, data, diag=diag)
 	return arraymat, trimat
 end
 
