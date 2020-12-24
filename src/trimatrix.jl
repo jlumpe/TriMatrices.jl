@@ -60,8 +60,7 @@ Base.zeros(layout::TriLayout, n::Int; diag=0.) = zeros(Float64, layout, n, diag=
 
 
 # Construct similar
-Base.similar(m::TriMatrix, new_eltype::Type, dims::Tuple) = similar(m.data, new_eltype, dims)
-Base.similar(m::TriMatrix, dims::Tuple) = similar(m.data, dims)
+Base.similar(m::TriMatrix, new_eltype::Type, dims::Dims) = similar(m.data, new_eltype, dims)
 
 
 ########################################

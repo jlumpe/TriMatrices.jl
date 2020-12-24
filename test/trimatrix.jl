@@ -99,6 +99,38 @@ end
 end
 
 
+@testset "similar" begin
+	for L in LAYOUT_TYPES_P
+		layout = L()
+
+		for n in N_VALS
+			for T in T_VALS
+				am, tm = make_test_matrix_pair(layout, n, T=T)
+
+				# Explicit calls to similar()
+				sm = similar(tm)
+				@test sm isa Array{T} && size(sm) == size(tm)
+
+				sm = similar(tm, Float32)
+				@test sm isa Array{Float32} && size(sm) == size(tm)
+
+				sm = similar(tm, (10,))
+				@test sm isa Array{T} && size(sm) == (10,)
+
+				sm = similar(tm, Float32, (10,))
+				@test sm isa Array{Float32} && size(sm) == (10,)
+
+				# Implicit calls when allocating for result
+				if n > 0
+					sm = tm[1, :]
+					@test sm isa Vector{T} && sm == am[1, :]
+				end
+			end
+		end
+	end
+end
+
+
 @testset "getindex" begin
 	for L in LAYOUT_TYPES_P
 		layout = L()
