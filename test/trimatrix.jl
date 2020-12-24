@@ -88,11 +88,11 @@ end
 				m = TriMatrix{T}(layout, undef, n)
 
 				@test size(m) == (n, n)
-				@test eltype(m) == T
-				@test Base.IndexStyle(m) == Base.IndexCartesian()
+				@test eltype(m) == eltype(typeof(m)) == T
+				@test Base.IndexStyle(m) == Base.IndexStyle(typeof(m)) == Base.IndexCartesian()
 				@test Base.parent(m) === m.data
 
-				@test TriLayout(m) == layout
+				@test TriLayout(m) == TriLayout(typeof(m)) == layout
 			end
 		end
 	end

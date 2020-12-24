@@ -12,9 +12,9 @@ struct TriIndexIterator{L<:TriLayout}
 	TriIndexIterator(::L, n::Int) where {L<:TriLayout} = new{L}(n)
 end
 
-Base.IteratorSize(::TriIndexIterator) = Base.HasLength()
+Base.IteratorSize(::Type{<:TriIndexIterator}) = Base.HasLength()
 Base.length(ti::TriIndexIterator{L}) where L = nelems(L, ti.n)
-Base.IteratorEltype(::TriIndexIterator) = Base.HasEltype()
+Base.IteratorEltype(::Type{<:TriIndexIterator}) = Base.HasEltype()
 Base.eltype(::Type{<:TriIndexIterator}) = Tuple{Int, Int}
 TriLayout(::TriIndexIterator{L}) where L = L()
 

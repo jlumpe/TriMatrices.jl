@@ -73,9 +73,11 @@ end
 		layout = L()
 		for n in 0:10
 			data, tmat = make_test_matrix(layout, n)
-
 			ti = tri_indices(layout, n)
+
 			@test length(ti) == length(data)
+			@test Base.IteratorEltype(ti) == Base.IteratorEltype(typeof(ti)) == Base.HasEltype()
+			@test Base.IteratorSize(ti) == Base.IteratorSize(typeof(ti)) == Base.HasLength()
 			!isempty(data) && @inferred first(ti)
 
 			i = 0
