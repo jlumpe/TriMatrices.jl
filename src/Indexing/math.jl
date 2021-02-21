@@ -6,14 +6,6 @@ export trinum, triinv, triinv_strict, triinv_rem
 """
 $(TYPEDSIGNATURES)
 
-Get the integer value of `floor(sqrt(n))`.
-"""
-@inline isqrt(n::Integer) = floor(typeof(n), sqrt(n))
-
-
-"""
-$(TYPEDSIGNATURES)
-
 Get the `n`th triangular number.
 
 # See also
