@@ -11,3 +11,8 @@ makedocs(;
 		"api.md",
 	],
 )
+
+
+deploydocs(
+	repo="github.com/jlumpe/TriMatrices.jl.git",
+)
