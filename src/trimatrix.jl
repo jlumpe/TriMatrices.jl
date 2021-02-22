@@ -173,37 +173,3 @@ end
 function Base.replace_in_print_matrix(::TriMatrix{T, <:TriUpper}, i::Integer, j::Integer, s::AbstractString) where T
 	i <= j ? s : Base.replace_with_centered_mark(s)
 end
-
-
-########################################
-# LinearAlgebra methods
-########################################
-
-"""
-	$(FUNCTIONNAME)(m::TriMatrix)
-
-Wrap a [`TriMatrix`](@ref) in the appropriate `LinearAlgebra` view type for
-optimized performance.
-"""
-function wraptri end
-
-wraptri(m::TriMatrix{<:TriLower}) = LowerTriangular(m)
-wraptri(m::TriMatrix{<:TriUpper}) = UpperTriangular(m)
-wraptri(m::TriMatrix{<:TriSymmetric}) = Symmetric(m)
-
-
-Base.transpose(m::TriMatrix{TriUpper, L}) where L = TriMatrix{TriLower, L}(m.n, m.data, m.diag)
-Base.transpose(m::TriMatrix{TriLower, L}) where L = TriMatrix{TriUpper, L}(m.n, m.data, m.diag)
-Base.transpose(m::TriMatrix{TriSymmetric}) = m
-
-
-LinearAlgebra.istriu(::TriMatrix{<:TriUpper}, n=0) = n >= 0 ? true : error("Not implemented")
-LinearAlgebra.istril(::TriMatrix{<:TriLower}, n=0) = n <= 0 ? true : error("Not implemented")
-LinearAlgebra.issymmetric(::TriMatrix{<:TriSymmetric}) = true
-
-
-# TODO - override common matrix methods to operate on wraptri() value
-# unary -
-# binary +, -, *, /
-# inv, dot, det, tr, eigen?
-# mul!, lmul!, rmul!, ldiv!, rdiv!

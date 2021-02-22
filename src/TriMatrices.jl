@@ -12,6 +12,7 @@ include("Indexing/Indexing.jl")
 using .Indexing
 
 include("trimatrix.jl")
+include("linearalgebra.jl")
 include("Testing.jl")
 
 
