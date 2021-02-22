@@ -17,6 +17,7 @@ struct TriMatrix{T, L<:TriLayout, A} <: AbstractMatrix{T}
 end
 
 
+
 ########################################
 # Constructors
 ########################################
@@ -62,6 +63,7 @@ Base.zeros(layout::TriLayout, n::Int; kw...) = zeros(Float64, layout, n; kw...)
 Base.similar(m::TriMatrix, new_eltype::Type, dims::Dims) = similar(m.data, new_eltype, dims)
 
 
+
 ########################################
 # General methods
 ########################################
@@ -74,6 +76,20 @@ TriMatrices.Indexing.tri_indices(m::TriMatrix) = tri_indices(TriLayout(m), m.n)
 Base.size(m::TriMatrix) = (m.n, m.n)
 Base.IndexStyle(::Type{<:TriMatrix}) = IndexCartesian()
 Base.parent(m::TriMatrix) = m.data
+
+
+# Copy data from general matrix into TriMatrix
+function Base.copyto!(dest::TriMatrix, src::AbstractMatrix)
+	n = dest.n
+	size(src) == (n, n) || error("Matrix sizes do not match")
+
+	for (i, (r, c)) in enumerate(tri_indices(dest))
+		@inbounds dest.data[i] = src[r, c]
+	end
+
+	return dest
+end
+
 
 
 ########################################
@@ -146,19 +162,6 @@ setindex_tri_unsafe!(mat::TriMatrix, v, idx::CartesianIndex{2}) = setindex_tri_u
 	return setindex_tri_unsafe!(mat, v, i, j)
 end
 
-
-
-# Copy data from general matrix into TriMatrix
-function Base.copyto!(dest::TriMatrix, src::AbstractMatrix)
-	n = dest.n
-	size(src) == (n, n) || error("Matrix sizes do not match")
-
-	for (i, (r, c)) in enumerate(tri_indices(dest))
-		@inbounds dest.data[i] = src[r, c]
-	end
-
-	return dest
-end
 
 
 ########################################
