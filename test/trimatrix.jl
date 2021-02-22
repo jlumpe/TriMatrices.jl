@@ -42,7 +42,7 @@ end
 				@test m2 == m
 
 				T2 = Float32
-				m3 = TriMatrix(layout, m, T2)
+				m3 = TriMatrix{T2}(layout, m)
 				@test m3 isa TriMatrix{T2, L}
 				@test m3 == m
 			end

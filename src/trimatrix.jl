@@ -34,16 +34,17 @@ end
 
 
 # Construct from existing matrix
-function TriMatrix(layout::TriLayout, m::AbstractMatrix, T::Type=eltype(m);
-                   diag=isempty(m) ? zero(T) : convert(T, m[1, 1]))
-	n = size(m, 1)
-	size(m, 2) == n || throw(DimensionMismatch("Matrix is not square"))
+function TriMatrix{T}(layout::TriLayout, m::AbstractMatrix;
+                      diag=isempty(m) ? zero(T) : convert(T, m[1, 1])) where T
+	n = LinearAlgebra.checksquare(m)
 
 	tm = TriMatrix{T}(layout, undef, n, diag=diag)
 	copyto!(tm, m)
 
 	return tm
 end
+
+TriMatrix(layout::TriLayout, m::AbstractMatrix{T}; kw...) where T = TriMatrix{T}(layout, m; kw...)
 
 
 # Construct filled
