@@ -6,16 +6,15 @@ optimized performance.
 """
 function wraptri end
 
-wraptri(m::TriMatrix{<:TriLower}) = LowerTriangular(m)
-wraptri(m::TriMatrix{<:TriUpper}) = UpperTriangular(m)
-wraptri(m::TriMatrix{<:TriSymmetric}) = Symmetric(m)
+wraptri(m::TriUpperMatrix) = UpperTriangular(m)
+wraptri(m::TriLowerMatrix) = LowerTriangular(m)
+wraptri(m::TriSymmetricMatrix) = Symmetric(m)
 
 
-Base.transpose(m::TriMatrix{TriUpper, L}) where L = TriMatrix{TriLower, L}(m.n, m.data, m.diag)
-Base.transpose(m::TriMatrix{TriLower, L}) where L = TriMatrix{TriUpper, L}(m.n, m.data, m.diag)
-Base.transpose(m::TriMatrix{TriSymmetric}) = m
+Base.transpose(m::TriULMatrix) = TriMatrix(transpose_layout(TriLayout(m)), m.n, m.data; diag=m.diag)
+Base.transpose(m::TriSymmetricMatrix) = m
 
 
-LinearAlgebra.istriu(::TriMatrix{<:TriUpper}) = true
-LinearAlgebra.istril(::TriMatrix{<:TriLower}) = true
-LinearAlgebra.issymmetric(::TriMatrix{<:TriSymmetric}) = true
+LinearAlgebra.istriu(::TriUpperMatrix) = true
+LinearAlgebra.istril(::TriLowerMatrix) = true
+LinearAlgebra.issymmetric(::TriSymmetricMatrix) = true
