@@ -28,9 +28,7 @@ function TriMatrix{T}(layout::TriLayout, ::UndefInitializer, n::Int; diag=zero(T
 	return TriMatrix(layout, n, data, diag=convert(T, diag))
 end
 
-function TriMatrix(layout::TriLayout, ::UndefInitializer, n::Int; diag=0.)
-	return TriMatrix{Float64}(layout, undef, n, diag=diag)
-end
+TriMatrix(layout::TriLayout, ::UndefInitializer, n::Int; kw...) = TriMatrix{Float64}(layout, undef, n; kw...)
 
 
 # Construct from existing matrix
@@ -55,9 +53,9 @@ function Base.fill(x, layout::TriLayout, n::Int; diag=x)
 end
 
 Base.ones(T::Type, layout::TriLayout, n::Int; diag=one(T)) = fill(one(T), layout, n, diag=diag)
-Base.ones(layout::TriLayout, n::Int; diag=1.) = ones(Float64, layout, n, diag=diag)
+Base.ones(layout::TriLayout, n::Int; kw...) = ones(Float64, layout, n; kw...)
 Base.zeros(T::Type, layout::TriLayout, n::Int; diag=zero(T)) = fill(zero(T), layout, n, diag=diag)
-Base.zeros(layout::TriLayout, n::Int; diag=0.) = zeros(Float64, layout, n, diag=diag)
+Base.zeros(layout::TriLayout, n::Int; kw...) = zeros(Float64, layout, n; kw...)
 
 
 # Construct similar
