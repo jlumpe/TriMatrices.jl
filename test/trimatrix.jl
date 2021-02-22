@@ -1,5 +1,5 @@
 using TriMatrices
-using TriMatrices: hasdiag, TriLayout, getindex_tri_unsafe, setindex_tri_unsafe!
+using TriMatrices: hasdiag, TriLayout, getindex_tri_unsafe, setindex_tri_unsafe!, check_tri_index
 using TriMatrices.Testing
 
 const N_VALS = [0, 1, 2, 5, 25]
