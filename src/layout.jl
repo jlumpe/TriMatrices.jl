@@ -61,3 +61,20 @@ with the given layout.
 """
 nelems(::Type{L}, n::Integer) where {L<:TriLayout} = trinum(max(hasdiag(L) ? n : n - 1, 0))
 nelems(layout::TriLayout, n::Integer) = nelems(typeof(layout), n)
+
+
+"""
+	$(FUNCTIONNAME)(::Type{<:TriLayout})
+	$(FUNCTIONNAME)(layout::TriLayout)
+
+Get the [`TriLayout`](@ref) of the transpose of a `TriMatrix` with the given layout.
+
+This maps `TriUpper` and TriLower` to each other, and `TriSymmetric` to itself.
+"""
+transpose_layout(::Type{TriUpper{D}}) where D = TriLower{D}
+transpose_layout(::Type{TriLower{D}}) where D = TriUpper{D}
+transpose_layout(::Type{TriSymmetric{D}}) where D = TriSymmetric{D}
+transpose_layout(::Type{TriUpper}) = TriLower
+transpose_layout(::Type{TriLower}) = TriUpper
+transpose_layout(::Type{TriSymmetric}) = TriSymmetric
+transpose_layout(::L) where {L <: TriLayout} = transpose_layout(L)()

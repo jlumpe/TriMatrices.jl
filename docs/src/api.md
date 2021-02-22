@@ -10,6 +10,7 @@ TriLower
 TriSymmetric
 TriMatrices.hasdiag
 TriMatrices.nelems
+TriMatrices.transpose_layout
 ```
 
 
