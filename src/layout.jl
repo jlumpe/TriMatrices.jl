@@ -43,6 +43,9 @@ non-diagonal entries.
 TriSymmetric
 
 
+const TriUL{D} = Union{TriUpper{D}, TriLower{D}}
+
+
 """
 	$(FUNCTIONNAME)(::Type{<:TriLayout})
 	$(FUNCTIONNAME)(layout::TriLayout)

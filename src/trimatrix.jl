@@ -17,6 +17,12 @@ struct TriMatrix{T, L<:TriLayout, A} <: AbstractMatrix{T}
 end
 
 
+const TriUpperMatrix{T, D, A} = TriMatrix{T, TriUpper{D}, A}
+const TriLowerMatrix{T, D, A} = TriMatrix{T, TriLower{D}, A}
+const TriULMatrix{T, D, A} = TriMatrix{T, <:TriUL{D}, A}
+const TriSymmetricMatrix{T, D, A} = TriMatrix{T, TriSymmetric{D}, A}
+
+
 
 ########################################
 # Constructors
