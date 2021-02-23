@@ -18,9 +18,17 @@ TriMatrices.transpose_layout
 
 ```@docs
 TriMatrix
+TriMatrix(::TriMatrices.TriLayout, ::Integer, ::AbstractVector)
+TriMatrix(::TriMatrices.TriLayout, ::UndefInitializer, ::Integer)
+TriMatrix(::TriMatrices.TriLayout, ::AbstractMatrix)
+Base.fill(::Any, ::TriMatrices.TriLayout, ::Integer)
+Base.ones(::Type, ::TriMatrices.TriLayout, ::Integer)
+Base.zeros(::Type, ::TriMatrices.TriLayout, ::Integer)
+TriMatrices.TriLayout(::TriMatrix)
+Base.parent(::TriMatrix)
+TriMatrices.getindex_tri_unsafe
+TriMatrices.setindex_tri_unsafe!
 ```
-
-### Methods
 
 
 ## Indexing
