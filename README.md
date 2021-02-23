@@ -1,5 +1,9 @@
 # TriMatrices.jl
 
+[![Build Status](https://github.com/jlumpe/TriMatrices.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/jlumpe/TriMatrices.jl/actions/workflows/ci.yml)
+[![Documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://jlumpe.github.io/TriMatrices.jl/stable)
+
+
 Julia package for storing large triangular or symmetric matrices in non-redundant format.
 
 `TriMatrix` is a subtype of `AbstractMatrix` which stores only the values on one side of the
