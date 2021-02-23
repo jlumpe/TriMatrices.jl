@@ -37,6 +37,14 @@ const TriSymmetricMatrix{T, D, A} = TriMatrix{T, TriSymmetric{D}, A}
 
 
 # Construct uninitialized
+"""
+	TriMatrix{T}(layout::TriLayout, undef, n::Integer; diag=zero(T))
+	TriMatrix(layout::TriLayout, undef, n::Integer; diag=0.)
+
+Create an uninitialized `n` by `n` `TriMatrix`.
+
+`T` defaults to `Float64` if not specified.
+"""
 function TriMatrix{T}(layout::TriLayout, ::UndefInitializer, n::Integer; diag=zero(T)) where T
 	data = Array{T}(undef, nelems(layout, n))
 	return TriMatrix(layout, n, data, diag=convert(T, diag))
@@ -45,7 +53,14 @@ end
 TriMatrix(layout::TriLayout, ::UndefInitializer, n::Integer; kw...) = TriMatrix{Float64}(layout, undef, n; kw...)
 
 
-# Construct from existing matrix
+"""
+	TriMatrix{T}(layout::TriLayout, m::AbstractMatrix; diag=zero(T))
+	TriMatrix(layout::TriLayout, m::AbstractMatrix; [diag])
+
+Create a `TriMatrix` by copying data from a square matrix `m`.
+
+If unspecified `T` defaults to `eltype(m)`.
+"""
 function TriMatrix{T}(layout::TriLayout, m::AbstractMatrix;
                       diag=isempty(m) ? zero(T) : convert(T, m[1, 1])) where T
 	n = LinearAlgebra.checksquare(m)
@@ -59,15 +74,32 @@ end
 TriMatrix(layout::TriLayout, m::AbstractMatrix{T}; kw...) where T = TriMatrix{T}(layout, m; kw...)
 
 
-# Construct filled
+"""
+	fill(x, layout::TriLayout, n::Integer; diag=x)
+
+Create an `n` by `n` [`TriMatrix`](@ref) with the stored data region filled with the value `x`.
+"""
 function Base.fill(x, layout::TriLayout, n::Integer; diag=x)
 	mat = TriMatrix{typeof(x)}(layout, undef, n; diag=diag)
 	fill!(mat.data, x)
 	return mat
 end
 
+
+"""
+	ones(T::Type=Float64, layout::TriLayout, n::Integer; diag=x)
+
+Create an `n` by `n` [`TriMatrix`](@ref) with the stored data region filled with ones.
+"""
 Base.ones(T::Type, layout::TriLayout, n::Integer; diag=one(T)) = fill(one(T), layout, n, diag=diag)
 Base.ones(layout::TriLayout, n::Integer; kw...) = ones(Float64, layout, n; kw...)
+
+
+"""
+	zeros(T::Type=Float64, layout::TriLayout, n::Integer; diag=x)
+
+Create an `n` by `n` [`TriMatrix`](@ref) with the stored data region filled with zeros.
+"""
 Base.zeros(T::Type, layout::TriLayout, n::Integer; diag=zero(T)) = fill(zero(T), layout, n, diag=diag)
 Base.zeros(layout::TriLayout, n::Integer; kw...) = zeros(Float64, layout, n; kw...)
 
@@ -81,13 +113,25 @@ Base.similar(m::TriMatrix, new_eltype::Type, dims::Dims) = similar(m.data, new_e
 # General methods
 ########################################
 
-TriLayout(::Type{<:TriMatrix{T, L}}) where {T, L} = L()
+"""
+	TriMatrices.TriLayout(m::TriMatrix)
+
+Get the `TriLayout` of the given `TriMatrix` instance.
+"""
 TriLayout(m::TriMatrix) = TriLayout(typeof(m))
+TriLayout(::Type{<:TriMatrix{T, L}}) where {T, L} = L()
+
 TriMatrices.Indexing.tri_indices(m::TriMatrix) = tri_indices(TriLayout(m), m.n)
 
 
 Base.size(m::TriMatrix) = (m.n, m.n)
 Base.IndexStyle(::Type{<:TriMatrix}) = IndexCartesian()
+
+"""
+	parent(m::TriMatrix)
+
+Get the underlying data array of the [`TriMatrix`](@ref) `m`.
+"""
 Base.parent(m::TriMatrix) = m.data
 
 

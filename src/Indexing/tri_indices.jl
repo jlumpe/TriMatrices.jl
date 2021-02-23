@@ -42,7 +42,7 @@ end
 
 
 """
-$(TYPEDSIGNATURES)
+	$(FUNCTIONNAME)(layout::TriLayout, n::Integer)
 
 Iterate over the cartesian indices of a `TriMatrix` corresponding to the linear
 indices of its data array, in order.

@@ -4,6 +4,7 @@ export check_tri_index, car2lin_unchecked, car2lin, lin2car
 
 """
     check_tri_index(Bool, layout::TriLayout, i, j)::Bool
+    check_tri_index(Bool, layout::TriLayout, idx::CartesianIndex{2})::Bool
 
 Check whether a row/column index is within the stored region of a `TriMatrix`
 with the given layout. Assumes the index is otherwise valid for the
