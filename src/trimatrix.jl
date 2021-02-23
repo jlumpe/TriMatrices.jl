@@ -9,7 +9,7 @@ struct TriMatrix{T, L<:TriLayout, A} <: AbstractMatrix{T}
 	data::A
 	diag::T
 
-	function TriMatrix(::L, n::Int, data::A; diag=zero(T)) where {L<:TriLayout, T, A<:AbstractVector{T}}
+	function TriMatrix(::L, n::Integer, data::A; diag=zero(T)) where {L<:TriLayout, T, A<:AbstractVector{T}}
 		Base.require_one_based_indexing(data)
 		length(data) == nelems(L, n) || error("Matrix size does not match size of data array")
 		return new{T, L, A}(n, data, diag)
@@ -30,12 +30,12 @@ const TriSymmetricMatrix{T, D, A} = TriMatrix{T, TriSymmetric{D}, A}
 
 
 # Construct uninitialized
-function TriMatrix{T}(layout::TriLayout, ::UndefInitializer, n::Int; diag=zero(T)) where T
+function TriMatrix{T}(layout::TriLayout, ::UndefInitializer, n::Integer; diag=zero(T)) where T
 	data = Array{T}(undef, nelems(layout, n))
 	return TriMatrix(layout, n, data, diag=convert(T, diag))
 end
 
-TriMatrix(layout::TriLayout, ::UndefInitializer, n::Int; kw...) = TriMatrix{Float64}(layout, undef, n; kw...)
+TriMatrix(layout::TriLayout, ::UndefInitializer, n::Integer; kw...) = TriMatrix{Float64}(layout, undef, n; kw...)
 
 
 # Construct from existing matrix
@@ -53,16 +53,16 @@ TriMatrix(layout::TriLayout, m::AbstractMatrix{T}; kw...) where T = TriMatrix{T}
 
 
 # Construct filled
-function Base.fill(x, layout::TriLayout, n::Int; diag=x)
+function Base.fill(x, layout::TriLayout, n::Integer; diag=x)
 	mat = TriMatrix{typeof(x)}(layout, undef, n; diag=diag)
 	fill!(mat.data, x)
 	return mat
 end
 
-Base.ones(T::Type, layout::TriLayout, n::Int; diag=one(T)) = fill(one(T), layout, n, diag=diag)
-Base.ones(layout::TriLayout, n::Int; kw...) = ones(Float64, layout, n; kw...)
-Base.zeros(T::Type, layout::TriLayout, n::Int; diag=zero(T)) = fill(zero(T), layout, n, diag=diag)
-Base.zeros(layout::TriLayout, n::Int; kw...) = zeros(Float64, layout, n; kw...)
+Base.ones(T::Type, layout::TriLayout, n::Integer; diag=one(T)) = fill(one(T), layout, n, diag=diag)
+Base.ones(layout::TriLayout, n::Integer; kw...) = ones(Float64, layout, n; kw...)
+Base.zeros(T::Type, layout::TriLayout, n::Integer; diag=zero(T)) = fill(zero(T), layout, n, diag=diag)
+Base.zeros(layout::TriLayout, n::Integer; kw...) = zeros(Float64, layout, n; kw...)
 
 
 # Construct similar
