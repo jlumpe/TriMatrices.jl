@@ -9,10 +9,17 @@ struct TriMatrix{T, L<:TriLayout, A} <: AbstractMatrix{T}
 	data::A
 	diag::T
 
-	function TriMatrix(::L, n::Integer, data::A; diag=zero(T)) where {L<:TriLayout, T, A<:AbstractVector{T}}
+	"""
+		TriMatrix(layout::TriLayout, n::Integer, data::AbstractVector{T}; diag=zero(T))
+
+	Create an `n` by `n` `TriMatrix` using the existing 1D array `data` for storage.
+
+	The length of `data` must match `n`, use [`TriMatrices.nelems`](@ref) to determine this value.
+	"""
+	function TriMatrix(layout::TriLayout, n::Integer, data::AbstractVector; diag=zero(eltype(data)))
 		Base.require_one_based_indexing(data)
-		length(data) == nelems(L, n) || error("Matrix size does not match size of data array")
-		return new{T, L, A}(n, data, diag)
+		length(data) == nelems(layout, n) || error("Matrix size does not match size of data array")
+		return new{eltype(data), typeof(layout), typeof(data)}(n, data, diag)
 	end
 end
 
